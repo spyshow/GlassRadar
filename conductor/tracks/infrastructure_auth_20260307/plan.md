@@ -9,7 +9,7 @@
 ## Phase 2: User Roles & Authentication Provider
 - [x] Task: Write Tests for Appwrite Auth Provider and Login flow (e5571d9)
 - [x] Task: Implement Refine.dev Auth Provider using Appwrite Web SDK (9b1b91f)
-- [ ] Task: Create Login Page with role-based redirection
+- [x] Task: Create Login Page with role-based redirection (f0caccd)
 - [ ] Task: Conductor - User Manual Verification 'Auth Provider' (Protocol in workflow.md)
 
 ## Phase 3: Admin User Management
