@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Scaffolding' (Protocol in workflow.md) (88dd267)
 
 ## Phase 2: User Roles & Authentication Provider
-- [ ] Task: Write Tests for Appwrite Auth Provider and Login flow
+- [x] Task: Write Tests for Appwrite Auth Provider and Login flow (e5571d9)
 - [ ] Task: Implement Refine.dev Auth Provider using Appwrite Web SDK
 - [ ] Task: Create Login Page with role-based redirection
 - [ ] Task: Conductor - User Manual Verification 'Auth Provider' (Protocol in workflow.md)
