@@ -13,7 +13,7 @@
 - [x] Task: Conductor - User Manual Verification 'Auth Provider' (Protocol in workflow.md) (87ea175)
 
 ## Phase 3: Admin User Management
-- [ ] Task: Write Tests for Admin-only User Creation interface
+- [x] Task: Write Tests for Admin-only User Creation interface (4d243e2)
 - [ ] Task: Implement UI for Admin to create users and assign roles
 - [ ] Task: Configure Appwrite permissions/functions for Admin-led user creation
 - [ ] Task: Conductor - User Manual Verification 'User Management' (Protocol in workflow.md)
