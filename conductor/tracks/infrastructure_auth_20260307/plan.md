@@ -14,6 +14,6 @@
 
 ## Phase 3: Admin User Management
 - [x] Task: Write Tests for Admin-only User Creation interface (4d243e2)
-- [ ] Task: Implement UI for Admin to create users and assign roles
+- [x] Task: Implement UI for Admin to create users and assign roles (7b3c5a5)
 - [ ] Task: Configure Appwrite permissions/functions for Admin-led user creation
 - [ ] Task: Conductor - User Manual Verification 'User Management' (Protocol in workflow.md)
