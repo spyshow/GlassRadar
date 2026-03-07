@@ -1,0 +1,30 @@
+services:
+  appwrite:
+    image: appwrite/appwrite:latest
+    container_name: appwrite
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - _APP_ENV=production
+      - _APP_OPENSOLE_REGISTER=disabled
+    networks:
+      - glassradar-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: glassradar-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - glassradar-net
+    depends_on:
+      - appwrite
+
+networks:
+  glassradar-net:
+    driver: bridge

@@ -1,0 +1,1 @@
+if (!(Test-Path "docker-compose.yml")) { throw "docker-compose.yml not found" }; $yaml = (Get-Content "docker-compose.yml") -join "`n"; if ($yaml -notmatch "appwrite") { throw "Appwrite service missing" }; if ($yaml -notmatch "frontend") { throw "Frontend service missing" }; Write-Host "Infra check passed!"
