@@ -1,0 +1,1 @@
+if (!(Test-Path 'backend/appwrite.json')) { throw 'appwrite.json missing' } else { Write-Host 'appwrite.json exists!' }

@@ -1,0 +1,13 @@
+{
+  "projectId": "glassradar",
+  "projectName": "GlassRadar",
+  "functions": [
+    {
+      "name": "createUser",
+      "runtime": "node-20.0",
+      "path": "functions/createUser",
+      "entrypoint": "src/main.js",
+      "execute": ["admin"]
+    }
+  ]
+}
