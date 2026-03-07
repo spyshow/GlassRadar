@@ -6,11 +6,11 @@
 - [x] Task: Configure Appwrite project and initial security settings (667322d)
 - [x] Task: Conductor - User Manual Verification 'Scaffolding' (Protocol in workflow.md) (88dd267)
 
-## Phase 2: User Roles & Authentication Provider
+## Phase 2: User Roles & Authentication Provider [checkpoint: 87ea175]
 - [x] Task: Write Tests for Appwrite Auth Provider and Login flow (e5571d9)
 - [x] Task: Implement Refine.dev Auth Provider using Appwrite Web SDK (9b1b91f)
 - [x] Task: Create Login Page with role-based redirection (f0caccd)
-- [ ] Task: Conductor - User Manual Verification 'Auth Provider' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Auth Provider' (Protocol in workflow.md) (87ea175)
 
 ## Phase 3: Admin User Management
 - [ ] Task: Write Tests for Admin-only User Creation interface
