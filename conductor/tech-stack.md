@@ -21,8 +21,8 @@
 
 ## Deployment & Environments
 - **Containerization:** All system components are containerized using **Docker** and orchestrated via **Docker Compose** for consistent behavior across hosts. (Skill: `docker-expert`)
-- **Dual Environments:**
-  - **Development/Test:** Hosted locally on developer machines for rapid iteration.
+- **Configuration Management:** An environment variable strategy using `.env` (development) and `.env.prod` (production) files is used to manage environment-specific settings.
+- **Dual Environments:**  - **Development/Test:** Hosted locally on developer machines for rapid iteration.
   - **Production:** High-availability server environment deployed within the facility network.
 - **Remote Access:** **ngrok** is utilized during testing phases to allow secure access to the production environment from the internet.
 
