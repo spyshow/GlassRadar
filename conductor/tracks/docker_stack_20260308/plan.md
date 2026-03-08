@@ -14,6 +14,6 @@
 
 ## Phase 3: Production Parity & Finalization
 - [x] Task: Create `docker-compose.prod.yml` for server deployments (2421120)
-- [ ] Task: Implement environment variable strategy for dual-environment support
+- [x] Task: Implement environment variable strategy for dual-environment support (6fc1365)
 - [ ] Task: Run full stack test and verify persistence
 - [ ] Task: Conductor - User Manual Verification 'Production Ready' (Protocol in workflow.md)
