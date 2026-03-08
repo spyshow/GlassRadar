@@ -6,7 +6,7 @@
 - [x] Task: Configure internal Docker network and service aliases (8e3d571)
 - [x] Task: Conductor - User Manual Verification 'Foundation' (Protocol in workflow.md) (08d2f89)
 
-## Phase 2: Data Persistence & Integration
+## Phase 2: Data Persistence & Integration [checkpoint: 49003a2]
 - [x] Task: Define named volumes for Appwrite storage and database (115d390)
 - [x] Task: Verify Refine.dev connectivity to Appwrite via internal network (107e729)
 - [x] Task: Write basic infrastructure health check tests (f9465df)
