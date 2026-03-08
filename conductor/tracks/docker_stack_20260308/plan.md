@@ -9,7 +9,7 @@
 ## Phase 2: Data Persistence & Integration
 - [x] Task: Define named volumes for Appwrite storage and database (115d390)
 - [x] Task: Verify Refine.dev connectivity to Appwrite via internal network (107e729)
-- [ ] Task: Write basic infrastructure health check tests
+- [x] Task: Write basic infrastructure health check tests (f9465df)
 - [ ] Task: Conductor - User Manual Verification 'Integration' (Protocol in workflow.md)
 
 ## Phase 3: Production Parity & Finalization
