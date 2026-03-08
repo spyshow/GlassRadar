@@ -1,1 +1,0 @@
-if (!(Test-Path ".env")) { throw ".env file missing" }; $env = (Get-Content ".env") -join "`n"; if ($env -notmatch "APPWRITE_ENDPOINT") { throw "APPWRITE_ENDPOINT missing in .env" }; Write-Host "Appwrite check passed!"

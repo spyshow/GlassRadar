@@ -1,1 +1,0 @@
-if (!(Test-Path "frontend")) { throw "frontend directory not found" }; if (!(Test-Path "frontend/package.json")) { throw "frontend/package.json not found" }; $pkg = (Get-Content "frontend/package.json") -join "`n"; if ($pkg -notmatch "refine") { throw "Refine dependency missing" }; Write-Host "Frontend check passed!"

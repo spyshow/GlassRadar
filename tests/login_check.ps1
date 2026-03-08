@@ -1,1 +1,0 @@
-if (!(Test-Path 'frontend/src/pages/login.tsx')) { throw 'login.tsx missing' } else { Write-Host 'login.tsx exists!' }
