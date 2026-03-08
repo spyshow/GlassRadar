@@ -1,0 +1,13 @@
+{
+  "name": "glassradar-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@refinedev/core": "latest",
+    "@refinedev/antd": "latest",
+    "@refinedev/appwrite": "latest",
+    "antd": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}
