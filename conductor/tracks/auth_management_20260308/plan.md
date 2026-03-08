@@ -17,10 +17,10 @@
     - [x] Write failing tests for login form submission
     - [x] Implement Login page using Ant Design and Refine
     - [x] Verify tests pass
-- [ ] Task: Setup Access Control (Dashboard Exception)
-    - [ ] Write failing tests for route protection (Dashboard public, others private)
-    - [ ] Configure access rules
-    - [ ] Verify tests pass
+- [x] Task: Setup Access Control (Dashboard Exception) (9329065)
+    - [x] Write failing tests for route protection (Dashboard public, others private)
+    - [x] Configure access rules
+    - [x] Verify tests pass
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Authentication Logic' (Protocol in workflow.md)
 
 ## Phase 3: User Management CRUD (Admin Only)
