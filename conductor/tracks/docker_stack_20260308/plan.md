@@ -1,6 +1,6 @@
 # Implementation Plan: Docker Infrastructure Stack
 
-## Phase 1: Foundation & Local Scaffolding
+## Phase 1: Foundation & Local Scaffolding [checkpoint: cabb6ea]
 - [x] Task: Create `frontend/Dockerfile` with multi-stage build optimization (9e24d86)
 - [x] Task: Create root `docker-compose.yml` for local development (728e366)
 - [x] Task: Configure internal Docker network and service aliases (8e3d571)
