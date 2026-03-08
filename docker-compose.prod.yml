@@ -1,0 +1,44 @@
+services:
+  appwrite:
+    image: appwrite/appwrite:latest
+    container_name: appwrite-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - appwrite-mariadb-prod:/var/lib/mysql
+      - appwrite-uploads-prod:/storage/uploads
+      - appwrite-config-prod:/storage/config
+    networks:
+      glassradar-net-prod:
+        aliases:
+          - appwrite.prod
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: glassradar-frontend-prod
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - appwrite
+    networks:
+      glassradar-net-prod:
+        aliases:
+          - frontend.prod
+
+networks:
+  glassradar-net-prod:
+    driver: bridge
+
+volumes:
+  appwrite-mariadb-prod:
+    driver: local
+  appwrite-uploads-prod:
+    driver: local
+  appwrite-config-prod:
+    driver: local
