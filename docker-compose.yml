@@ -7,7 +7,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - appwrite-data:/storage
+      - appwrite-mariadb:/var/lib/mysql
+      - appwrite-uploads:/storage/uploads
+      - appwrite-config:/storage/config
     networks:
       glassradar-net:
         aliases:
@@ -34,5 +36,9 @@ networks:
     driver: bridge
 
 volumes:
-  appwrite-data:
+  appwrite-mariadb:
+    driver: local
+  appwrite-uploads:
+    driver: local
+  appwrite-config:
     driver: local
