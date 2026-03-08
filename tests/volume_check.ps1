@@ -8,11 +8,11 @@ if (-not (Test-Path $composePath)) {
 
 $content = Get-Content $composePath -Raw
 
-# Check for specific Appwrite volumes
+# Check for specific Appwrite volumes (with environment variable support)
 $requiredVolumes = @("appwrite-mariadb", "appwrite-uploads", "appwrite-config")
 foreach ($volume in $requiredVolumes) {
-    if ($content -notmatch "${volume}:") {
-        Write-Host "FAIL: docker-compose.yml missing named volume: $volume"
+    if ($content -notmatch "${volume}-") {
+        Write-Host "FAIL: docker-compose.yml missing named volume matching: $volume"
         exit 1
     }
 }
