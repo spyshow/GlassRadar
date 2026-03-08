@@ -8,7 +8,7 @@
     - [x] Ensure Email/Password provider is enabled
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Setup' (Protocol in workflow.md) (34aadd0)
 
-## Phase 2: Core Authentication Logic (Frontend)
+## Phase 2: Core Authentication Logic (Frontend) [checkpoint: 7b1c4d6]
 - [x] Task: Implement Appwrite Auth Provider in Refine (36a21bc)
     - [x] Write failing tests for `login`, `logout`, `checkAuth`, `getPermissions`, `getIdentity`
     - [x] Implement `authProvider` methods using Appwrite SDK
@@ -21,7 +21,7 @@
     - [x] Write failing tests for route protection (Dashboard public, others private)
     - [x] Configure access rules
     - [x] Verify tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Authentication Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Authentication Logic' (Protocol in workflow.md) (7b1c4d6)
 
 ## Phase 3: User Management CRUD (Admin Only)
 - [ ] Task: Implement User List Table
