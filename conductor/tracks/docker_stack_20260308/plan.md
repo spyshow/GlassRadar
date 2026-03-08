@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation & Local Scaffolding
 - [x] Task: Create `frontend/Dockerfile` with multi-stage build optimization (9e24d86)
-- [ ] Task: Create root `docker-compose.yml` for local development
+- [x] Task: Create root `docker-compose.yml` for local development (728e366)
 - [ ] Task: Configure internal Docker network and service aliases
 - [ ] Task: Conductor - User Manual Verification 'Foundation' (Protocol in workflow.md)
 
