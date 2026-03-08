@@ -81,7 +81,7 @@ describe('authProvider', () => {
                 total: 1
             } as any);
 
-            const permissions = await authProvider.getPermissions();
+            const permissions = await authProvider.getPermissions?.();
 
             expect(permissions).toEqual(['admin']);
             expect(databases.listDocuments).toHaveBeenCalled();

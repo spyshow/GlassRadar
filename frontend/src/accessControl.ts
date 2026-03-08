@@ -1,7 +1,7 @@
 import type { AccessControlProvider } from "@refinedev/core";
 
 export const accessControlProvider: AccessControlProvider = {
-  can: async ({ resource, action, params }) => {
+  can: async ({ resource, params }) => {
     if (resource === "dashboard") {
       return { can: true };
     }
@@ -18,10 +18,5 @@ export const accessControlProvider: AccessControlProvider = {
     }
 
     return { can: true };
-  },
-  options: {
-    buttons: {
-      enable: true,
-    },
   },
 };
