@@ -6,9 +6,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - _APP_ENV=production
-      - _APP_OPENSOLE_REGISTER=disabled
+    volumes:
+      - appwrite-data:/storage
     networks:
       - glassradar-net
 
@@ -16,15 +15,20 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      target: production
     container_name: glassradar-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
-    networks:
-      - glassradar-net
+      - "3000:80"
     depends_on:
       - appwrite
+    networks:
+      - glassradar-net
 
 networks:
   glassradar-net:
     driver: bridge
+
+volumes:
+  appwrite-data:
+    driver: local
