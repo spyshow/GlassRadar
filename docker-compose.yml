@@ -9,7 +9,9 @@ services:
     volumes:
       - appwrite-data:/storage
     networks:
-      - glassradar-net
+      glassradar-net:
+        aliases:
+          - appwrite.local
 
   frontend:
     build:
@@ -23,7 +25,9 @@ services:
     depends_on:
       - appwrite
     networks:
-      - glassradar-net
+      glassradar-net:
+        aliases:
+          - frontend.local
 
 networks:
   glassradar-net:
