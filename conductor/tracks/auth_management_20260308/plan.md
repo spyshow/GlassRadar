@@ -1,11 +1,11 @@
 # Implementation Plan: User Authentication and Management
 
 ## Phase 1: Backend Setup (Appwrite)
-- [ ] Task: Create `users` collection in Appwrite
-    - [ ] Define attributes: `userId` (string), `email` (string), `name` (string), `role` (enum: admin, IS operator, QC, QA, mold tech, mold HoS, Production HoS, QA manager), `avatar` (string), `position` (string)
-    - [ ] Set collection permissions (Admin: CRUD, Users: Update own document, Read all)
-- [ ] Task: Configure Appwrite Auth Settings
-    - [ ] Ensure Email/Password provider is enabled
+- [x] Task: Create `users` collection in Appwrite (f8f4170)
+    - [x] Define attributes: `userId` (string), `email` (string), `name` (string), `role` (enum: admin, IS operator, QC, QA, mold tech, mold HoS, Production HoS, QA manager), `avatar` (string), `position` (string)
+    - [x] Set collection permissions (Admin: CRUD, Users: Update own document, Read all)
+- [x] Task: Configure Appwrite Auth Settings (f8f4170)
+    - [x] Ensure Email/Password provider is enabled
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Setup' (Protocol in workflow.md)
 
 ## Phase 2: Core Authentication Logic (Frontend)
