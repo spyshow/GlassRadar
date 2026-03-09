@@ -22,6 +22,7 @@ import { LoginPage } from "./pages/login";
 import { UserList } from "./pages/users/list";
 import { UserCreate } from "./pages/users/create";
 import { UserEdit } from "./pages/users/edit";
+import { ProfilePage } from "./pages/profile";
 
 function App() {
   return (
@@ -57,6 +58,14 @@ function App() {
                     meta: {
                         label: "User Management",
                     }
+                  },
+                  {
+                    name: "profile",
+                    list: "/profile",
+                    meta: {
+                        label: "My Profile",
+                        hide: true,
+                    }
                   }
                 ]}
                 options={{
@@ -85,6 +94,7 @@ function App() {
                         <Route path="create" element={<UserCreate />} />
                         <Route path="edit/:id" element={<UserEdit />} />
                     </Route>
+                    <Route path="/profile" element={<ProfilePage />} />
                   </Route>
                   <Route
                     element={

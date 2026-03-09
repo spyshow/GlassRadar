@@ -12,13 +12,23 @@ describe('accessControlProvider', () => {
     });
 
     it('should deny access to users resource for non-admins', async () => {
-        // Mocking can be complex here depending on how you implement it
-        // but typically it depends on permissions from authProvider
         const result = await accessControlProvider.can({
             resource: 'users',
             action: 'list',
             params: {
                 permissions: ['IS operator']
+            }
+        });
+
+        expect(result.can).toBe(false);
+    });
+
+    it('should deny access to create user for non-admins', async () => {
+        const result = await accessControlProvider.can({
+            resource: 'users',
+            action: 'create',
+            params: {
+                permissions: ['QC']
             }
         });
 
