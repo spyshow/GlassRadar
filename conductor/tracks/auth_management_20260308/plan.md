@@ -49,7 +49,7 @@
     - [x] Restrict Admin-only routes and menu items
     - [x] Verify tests pass
 
-- [ ] Task: Final Coverage & Linting Check
-    - [ ] Run test coverage and ensure >80%
-    - [ ] Run linting and fix any issues
+- [x] Task: Final Coverage & Linting Check (c36af60)
+    - [x] Run test coverage and ensure >80%
+    - [x] Run linting and fix any issues
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Self-Profile & Access Control' (Protocol in workflow.md) (32d9fcb)
