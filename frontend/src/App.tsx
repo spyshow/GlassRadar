@@ -19,6 +19,9 @@ import { accessControlProvider } from "./accessControl";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { appwriteClient } from "./utility";
 import { LoginPage } from "./pages/login";
+import { UserList } from "./pages/users/list";
+import { UserCreate } from "./pages/users/create";
+import { UserEdit } from "./pages/users/edit";
 
 function App() {
   return (
@@ -49,6 +52,8 @@ function App() {
                   {
                     name: "users",
                     list: "/users",
+                    create: "/users/create",
+                    edit: "/users/edit/:id",
                     meta: {
                         label: "User Management",
                     }
@@ -57,7 +62,7 @@ function App() {
                 options={{
                   syncWithLocation: true,
                   warnWhenUnsavedChanges: true,
-                  projectId: "69ad504b0020f3d97208",
+                  projectId: "glassradar",
                 }}
               >
                 <Routes>
@@ -75,7 +80,11 @@ function App() {
                   >
                     <Route index element={<NavigateToResource resource="dashboard" />} />
                     <Route path="/dashboard" element={<div>Dashboard Page (Public)</div>} />
-                    <Route path="/users" element={<div>User Management (Admin Only)</div>} />
+                    <Route path="/users">
+                        <Route index element={<UserList />} />
+                        <Route path="create" element={<UserCreate />} />
+                        <Route path="edit/:id" element={<UserEdit />} />
+                    </Route>
                   </Route>
                   <Route
                     element={
