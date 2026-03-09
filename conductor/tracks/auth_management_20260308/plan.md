@@ -23,20 +23,20 @@
     - [x] Verify tests pass
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Authentication Logic' (Protocol in workflow.md) (7b1c4d6)
 
-## Phase 3: User Management CRUD (Admin Only)
-- [ ] Task: Implement User List Table
-    - [ ] Write failing tests for fetching/displaying users
-    - [ ] Implement `<UserList />` with all fields
-    - [ ] Verify tests pass
-- [ ] Task: Implement Admin User Create/Edit (Drawer/Modal)
-    - [ ] Write failing tests for admin-led creation/editing
-    - [ ] Implement `<UserCreate />` and `<UserEdit />` including Role assignment
-    - [ ] Verify tests pass
-- [ ] Task: Implement User Delete
-    - [ ] Write failing tests for deletion
-    - [ ] Add delete functionality to the admin table
-    - [ ] Verify tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: User Management CRUD' (Protocol in workflow.md)
+## Phase 3: User Management CRUD (Admin Only) [checkpoint: cf3edcf]
+- [x] Task: Implement User List Table (266e18d)
+    - [x] Write failing tests for fetching/displaying users
+    - [x] Implement `<UserList />` with all fields
+    - [x] Verify tests pass
+- [x] Task: Implement Admin User Create/Edit (Drawer/Modal) (266e18d)
+    - [x] Write failing tests for admin-led creation/editing
+    - [x] Implement `<UserCreate />` and `<UserEdit />` including Role assignment
+    - [x] Verify tests pass
+- [x] Task: Implement User Delete (266e18d)
+    - [x] Write failing tests for deletion
+    - [x] Add delete functionality to the admin table
+    - [x] Verify tests pass
+- [x] Task: Conductor - User Manual Verification 'Phase 3: User Management CRUD' (Protocol in workflow.md) (cf3edcf)
 
 ## Phase 4: Self-Profile & Access Control
 - [ ] Task: Implement Self-Profile Editing
