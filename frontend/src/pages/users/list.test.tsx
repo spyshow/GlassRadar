@@ -5,6 +5,7 @@ import { TestWrapper } from '../../test/utils';
 
 // Mock Refine's useTable which is used by UserList
 vi.mock('@refinedev/antd', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const actual = await importOriginal<any>();
     return {
         ...actual,

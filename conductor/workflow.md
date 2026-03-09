@@ -4,7 +4,13 @@
 
 1. **The Plan is the Source of Truth:** All work must be tracked in `plan.md`
 2. **The Tech Stack is Deliberate:** Changes to the tech stack must be documented in `tech-stack.md` *before* implementation
-3. **Specialized Agent Skills:** AI agents should leverage the following skills via `activate_skill` when working on relevant components:
+3. **Mandatory Tool Usage for Validation:** For every code modification or new feature, the following tools MUST be used for testing and building:
+   - **Appwrite API:** For backend logic and data validation.
+   - **Chrome DevTools:** For UI verification and performance monitoring.
+   - **Docker:** For local builds (`docker compose up --build`) to ensure environmental parity.
+   - **GitHub MCP:** For branch management, synchronization, and finalization of tasks.
+   - **Appwrite Docs MCP:** For all Appwrite technical research, SDK references, and documentation queries.
+4. **Specialized Agent Skills:** AI agents should leverage the following skills via `activate_skill` when working on relevant components:
    - **Data Fetching & State:** `tanstack-query-expert`
    - **UI/UX & Visuals:** `frontend-design`, `animejs-animation`
    - **React Development:** `react-best-practices`

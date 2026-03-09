@@ -25,10 +25,10 @@ export const authProvider: AuthProvider = {
   logout: async () => {
     try {
       await account.deleteSession("current");
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error,
+        error: error as Error,
       };
     }
 
@@ -83,10 +83,10 @@ export const authProvider: AuthProvider = {
           authenticated: true,
         };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         authenticated: false,
-        error: error,
+        error: error as Error,
         logout: true,
         redirectTo: "/login",
       };
@@ -135,6 +135,7 @@ export const authProvider: AuthProvider = {
                 name: user.name,
                 avatar: profile.avatar,
                 position: profile.position,
+                role: profile.role, // Added role
             };
         }
 

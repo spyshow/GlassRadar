@@ -23,6 +23,7 @@ describe('authProvider', () => {
     describe('login', () => {
         it('should login successfully with valid credentials', async () => {
             const mockSession = { $id: 'session-id' };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.mocked(account.createEmailPasswordSession).mockResolvedValue(mockSession as any);
 
             const result = await authProvider.login({ email: 'test@example.com', password: 'password' });
@@ -33,7 +34,8 @@ describe('authProvider', () => {
         });
 
         it('should return failure on invalid credentials', async () => {
-            vi.mocked(account.createEmailPasswordSession).mockRejectedValue(new Error('Invalid credentials'));
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            vi.mocked(account.createEmailPasswordSession).mockRejectedValue(new Error('Invalid credentials') as any);
 
             const result = await authProvider.login({ email: 'test@example.com', password: 'wrong' });
 
@@ -44,6 +46,7 @@ describe('authProvider', () => {
 
     describe('logout', () => {
         it('should logout successfully', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.mocked(account.deleteSession).mockResolvedValue({} as any);
 
             const result = await authProvider.logout({});
@@ -56,6 +59,7 @@ describe('authProvider', () => {
 
     describe('checkAuth', () => {
         it('should return authenticated if session exists', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.mocked(account.get).mockResolvedValue({ $id: 'user-id' } as any);
 
             const result = await authProvider.check({});
@@ -64,7 +68,8 @@ describe('authProvider', () => {
         });
 
         it('should return unauthenticated if no session', async () => {
-            vi.mocked(account.get).mockRejectedValue(new Error('No session'));
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            vi.mocked(account.get).mockRejectedValue(new Error('No session') as any);
 
             const result = await authProvider.check({});
 
@@ -75,10 +80,13 @@ describe('authProvider', () => {
 
     describe('getPermissions', () => {
         it('should return user role from users collection', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.mocked(account.get).mockResolvedValue({ $id: 'user-id' } as any);
+            
             vi.mocked(databases.listDocuments).mockResolvedValue({
                 documents: [{ role: 'admin' }],
                 total: 1
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
 
             const permissions = await authProvider.getPermissions?.();
@@ -91,10 +99,13 @@ describe('authProvider', () => {
     describe('getIdentity', () => {
         it('should return user identity details', async () => {
             const mockUser = { $id: 'user-id', name: 'Test User' };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.mocked(account.get).mockResolvedValue(mockUser as any);
+            
             vi.mocked(databases.listDocuments).mockResolvedValue({
                 documents: [{ name: 'Test User', avatar: 'avatar-url', position: 'Developer' }],
                 total: 1
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
 
             const identity = await authProvider.getIdentity?.();

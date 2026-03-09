@@ -5,6 +5,7 @@ import { TestWrapper } from '../../test/utils';
 
 // Mock Refine hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const actual = await importOriginal<any>();
     return {
         ...actual,
@@ -16,6 +17,7 @@ vi.mock('@refinedev/core', async (importOriginal) => {
 });
 
 vi.mock('@refinedev/antd', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const actual = await importOriginal<any>();
     return {
         ...actual,

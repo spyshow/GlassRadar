@@ -11,6 +11,15 @@ The interface is designed for high-availability environments where reduced eye s
 - **Theming:** A refined **Dark Mode** is the primary theme, optimized for low-light facility conditions.
 - **Aesthetic:** A 'Clean & Modern' approach that avoids clutter while maintaining a professional, industrial feel.
 - **Color Logic:** Use clear, bold semantic colors (e.g., Green for Running, Red for Stopped, Amber for Warning) to distinguish machine statuses instantly.
+- **User Role Tags:** Each user level has a distinct color for rapid identification in management views:
+    - **Admin:** `red` (High Authority)
+    - **IS Operator:** `cyan`
+    - **QC:** `blue`
+    - **QA:** `geekblue`
+    - **Mold Tech:** `orange`
+    - **Mold HoS:** `volcano`
+    - **Production HoS:** `purple`
+    - **QA Manager:** `magenta`
 
 ## UX Principles
 ### 1. Glanceability

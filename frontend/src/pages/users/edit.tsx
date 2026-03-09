@@ -3,11 +3,29 @@ import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
 
 export const UserEdit: React.FC = () => {
-    const { formProps, saveButtonProps, queryResult } = useForm();
+    const { formProps, saveButtonProps, query, onFinish } = useForm();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleFinish = async (values: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password_confirm, ...rest } = values;
+
+        try {
+            await onFinish({
+                ...rest,
+            });
+        } catch (error) {
+            console.error("User update failed:", error);
+        }
+    };
 
     return (
-        <Edit saveButtonProps={saveButtonProps} isLoading={queryResult?.isLoading}>
-            <Form {...formProps} layout="vertical">
+        <Edit saveButtonProps={{ ...saveButtonProps, onClick: () => formProps.form?.submit() }} isLoading={query?.isLoading}>
+            <Form 
+                {...formProps} 
+                layout="vertical"
+                onFinish={handleFinish}
+            >
                 <Form.Item
                     label="Name"
                     name="name"
@@ -21,6 +39,34 @@ export const UserEdit: React.FC = () => {
                     rules={[{ required: true, type: "email" }]}
                 >
                     <Input />
+                </Form.Item>
+                <Form.Item
+                    label="Password"
+                    name="password"
+                    rules={[
+                        { min: 8, message: "Password must be at least 8 characters." }
+                    ]}
+                    hasFeedback
+                >
+                    <Input.Password placeholder="Leave empty to keep current password" />
+                </Form.Item>
+                <Form.Item
+                    label="Confirm Password"
+                    name="password_confirm"
+                    dependencies={['password']}
+                    hasFeedback
+                    rules={[
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('The new password that you entered do not match!'));
+                            },
+                        }),
+                    ]}
+                >
+                    <Input.Password placeholder="Confirm password" />
                 </Form.Item>
                 <Form.Item
                     label="Role"

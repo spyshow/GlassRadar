@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useGetIdentity, useUpdate, useNotification } from "@refinedev/core";
+import { useGetIdentity } from "@refinedev/core";
 import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, Card, Spin } from "antd";
+import { Form, Input, Spin } from "antd";
 import { databases } from "../../utility";
 import { Query } from "@refinedev/appwrite";
 
 export const ProfilePage: React.FC = () => {
-    const { data: identity, isLoading: identityLoading } = useGetIdentity<any>();
+    const { data: identity, isLoading: identityLoading } = useGetIdentity<{ id: string, name: string }>();
     const [docId, setDocId] = useState<string | null>(null);
-    const { open } = useNotification();
 
-    const { formProps, saveButtonProps, queryResult, onFinish } = useForm({
+    const { formProps, saveButtonProps } = useForm({
         resource: "users",
         id: docId ?? undefined,
         action: "edit",

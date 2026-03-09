@@ -1,5 +1,5 @@
 # Test for Appwrite internal alias usage in frontend configuration
-$appwriteUtilPath = "frontend/src/utility/appwrite.ts"
+$appwriteUtilPath = "frontend/src/utility/appwriteClient.ts"
 
 if (-not (Test-Path $appwriteUtilPath)) {
     Write-Host "FAIL: frontend configuration file does not exist at $appwriteUtilPath"
@@ -8,11 +8,11 @@ if (-not (Test-Path $appwriteUtilPath)) {
 
 $content = Get-Content $appwriteUtilPath -Raw
 
-# Check for internal alias usage
-if ($content -notmatch "http://appwrite.local/v1") {
-    Write-Host "FAIL: frontend not configured to use internal alias 'http://appwrite.local/v1'"
+# Check for localhost usage (needed for browser access)
+if ($content -notmatch "http://localhost/v1") {
+    Write-Host "FAIL: frontend not configured to use 'http://localhost/v1'"
     exit 1
 }
 
-Write-Host "PASS: frontend is correctly configured to use the internal Appwrite alias."
+Write-Host "PASS: frontend is correctly configured to use http://localhost/v1."
 exit 0

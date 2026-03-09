@@ -1,16 +1,19 @@
-# Stage 1: Base - Install dependencies only when package.json changes
-FROM node:20-alpine AS base
+# Stage 1: Install dependencies
+FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
-# Stage 2: Build - Copy source and build the application
-FROM base AS build
+# Stage 2: Build the application
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# Stage 3: Production - Serve the built app using Nginx
+# Stage 3: Serve the application with Nginx
 FROM nginx:stable-alpine AS production
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

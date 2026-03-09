@@ -22,7 +22,10 @@ import { LoginPage } from "./pages/login";
 import { UserList } from "./pages/users/list";
 import { UserCreate } from "./pages/users/create";
 import { UserEdit } from "./pages/users/edit";
+import { UserShow } from "./pages/users/show";
 import { ProfilePage } from "./pages/profile";
+import { ChatPage } from "./pages/chat";
+import { FloatingChat } from "./components/chat/FloatingChat";
 
 function App() {
   return (
@@ -45,9 +48,16 @@ function App() {
                 resources={[
                   {
                     name: "dashboard",
-                    list: "/",
+                    list: "/dashboard",
                     meta: {
                         label: "Dashboard",
+                    }
+                  },
+                  {
+                    name: "messages",
+                    list: "/chat",
+                    meta: {
+                        label: "Industrial Chat",
                     }
                   },
                   {
@@ -55,6 +65,7 @@ function App() {
                     list: "/users",
                     create: "/users/create",
                     edit: "/users/edit/:id",
+                    show: "/users/show/:id",
                     meta: {
                         label: "User Management",
                     }
@@ -84,18 +95,26 @@ function App() {
                         <ThemedLayout>
                           <Outlet />
                         </ThemedLayout>
+                        <FloatingChat />
                       </Authenticated>
                     }
                   >
                     <Route index element={<NavigateToResource resource="dashboard" />} />
+                    
                     <Route path="/dashboard" element={<div>Dashboard Page (Public)</div>} />
+
+                    <Route path="/chat" element={<ChatPage />} />
+
                     <Route path="/users">
                         <Route index element={<UserList />} />
                         <Route path="create" element={<UserCreate />} />
                         <Route path="edit/:id" element={<UserEdit />} />
+                        <Route path="show/:id" element={<UserShow />} />
                     </Route>
+
                     <Route path="/profile" element={<ProfilePage />} />
                   </Route>
+
                   <Route
                     element={
                       <Authenticated key="authenticated-outer" fallback={<Outlet />}>
@@ -105,12 +124,14 @@ function App() {
                   >
                     <Route path="/login" element={<LoginPage />} />
                   </Route>
+
                   <Route
                     element={
                       <Authenticated key="authenticated-auth">
                         <ThemedLayout>
                           <Outlet />
                         </ThemedLayout>
+                        <FloatingChat />
                       </Authenticated>
                     }
                   >
