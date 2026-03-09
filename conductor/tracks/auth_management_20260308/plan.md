@@ -39,16 +39,17 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: User Management CRUD' (Protocol in workflow.md) (cf3edcf)
 
 ## Phase 4: Self-Profile & Access Control
-- [ ] Task: Implement Self-Profile Editing
-    - [ ] Write failing tests for user updating their own profile (Name, Avatar, Position)
-    - [ ] Create Profile page for authenticated users
-    - [ ] **Security:** Prevent users from changing their own `role`
-    - [ ] Verify tests pass
-- [ ] Task: Enforce Role-Based UI Elements
-    - [ ] Write failing tests for role-based navigation visibility
-    - [ ] Restrict Admin-only routes and menu items
-    - [ ] Verify tests pass
+- [x] Task: Implement Self-Profile Editing (cf3edcf)
+    - [x] Write failing tests for user updating their own profile (Name, Avatar, Position)
+    - [x] Create Profile page for authenticated users
+    - [x] **Security:** Prevent users from changing their own `role`
+    - [x] Verify tests pass
+- [x] Task: Enforce Role-Based UI Elements (cf3edcf)
+    - [x] Write failing tests for role-based navigation visibility
+    - [x] Restrict Admin-only routes and menu items
+    - [x] Verify tests pass
+
 - [ ] Task: Final Coverage & Linting Check
     - [ ] Run test coverage and ensure >80%
     - [ ] Run linting and fix any issues
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Self-Profile & Access Control' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Self-Profile & Access Control' (Protocol in workflow.md) (32d9fcb)
