@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Layout, Menu, theme } from "antd";
-import { useList, useGetIdentity, HttpError } from "@refinedev/core";
+import React, { useState, useEffect, useRef } from "react";
+import { Layout, Menu, theme, Badge, App } from "antd";
+import { useList, useGetIdentity, HttpError, useSubscription } from "@refinedev/core";
 import {
     MessageOutlined,
     TeamOutlined,
@@ -30,10 +30,25 @@ interface UserProfile {
     role?: string;
 }
 
+interface Message {
+    id: string;
+    $id?: string;
+    content: string;
+    senderId: string;
+    senderName: string;
+    senderRole: string;
+    channel: string;
+    timestamp: string;
+    recipientId?: string;
+    isPrivate?: boolean;
+}
+
 export const ChatPage: React.FC = () => {
     const [activeKey, setActiveKey] = useState("general");
     const [recipient, setRecipient] = useState<{ id: string, name: string } | null>(null);
+    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
     const { token: { colorBgContainer } } = theme.useToken();
+    const { notification } = App.useApp();
 
     const { query } = useList<UserProfile, HttpError>({
         resource: "users",
@@ -42,6 +57,12 @@ export const ChatPage: React.FC = () => {
 
     const { data: staffData } = query;
     const { data: identity } = useGetIdentity<Identity>();
+    
+    // Use ref to avoid stale closures in useSubscription
+    const identityRef = useRef(identity);
+    useEffect(() => {
+        identityRef.current = identity;
+    }, [identity]);
 
     const channels = React.useMemo(() => {
         const baseChannels = [
@@ -71,21 +92,86 @@ export const ChatPage: React.FC = () => {
             setRecipient(null);
             setActiveKey(key);
         }
+        
+        // Clear unread count
+        setUnreadCounts(prev => ({ ...prev, [key]: 0 }));
     };
+
+    // Subscription for unread counts and notifications
+    useSubscription({
+        channel: "resources/messages",
+        meta: {
+            types: ["created"]
+        },
+        onLiveEvent: (event) => {
+            const newMessage = event.payload as unknown as Message;
+            const currentIdentity = identityRef.current;
+            
+            if (newMessage.senderId !== currentIdentity?.id) {
+                const messageChannel = newMessage.isPrivate ? `user_${newMessage.senderId}` : newMessage.channel;
+                
+                // Trigger notification for DMs directed to current user
+                if (newMessage.isPrivate && newMessage.recipientId === currentIdentity?.id) {
+                    notification.info({
+                        message: `New message from ${newMessage.senderName}`,
+                        description: newMessage.content,
+                        placement: "bottomLeft",
+                        duration: 5,
+                        onClick: () => {
+                            setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
+                            setActiveKey(`user_${newMessage.senderId}`);
+                            setUnreadCounts(prev => ({ ...prev, [`user_${newMessage.senderId}`]: 0 }));
+                        }
+                    });
+                }
+
+                // Increment unread count if channel is not currently active
+                if (activeKey !== messageChannel) {
+                    setUnreadCounts(prev => ({
+                        ...prev,
+                        [messageChannel]: (prev[messageChannel] || 0) + 1
+                    }));
+                }
+            }
+        }
+    });
+
+    // Reset unread count for current channel
+    useEffect(() => {
+        if (activeKey) {
+            setUnreadCounts(prev => ({ ...prev, [activeKey]: 0 }));
+        }
+    }, [activeKey]);
 
     const menuItems: MenuProps['items'] = React.useMemo(() => {
         const staffItems = staffData?.data.map((user: UserProfile) => ({
             key: `user_${user.userId}`,
-            label: user.name,
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <span>{user.name}</span>
+                    {unreadCounts[`user_${user.userId}`] > 0 && <Badge count={unreadCounts[`user_${user.userId}`]} size="small" />}
+                </div>
+            ),
             icon: <UserOutlined />,
         })) || [];
+
+        const channelItems = channels.map((c) => ({
+            key: c.key,
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <span>{c.label}</span>
+                    {unreadCounts[c.key] > 0 && <Badge count={unreadCounts[c.key]} size="small" />}
+                </div>
+            ),
+            icon: c.icon,
+        }));
 
         return [
             {
                 key: 'channels',
                 type: 'group',
                 label: 'Public Channels',
-                children: channels,
+                children: channelItems,
             },
             {
                 type: 'divider',
@@ -97,7 +183,7 @@ export const ChatPage: React.FC = () => {
                 children: staffItems,
             },
         ];
-    }, [channels, staffData]);
+    }, [channels, staffData, unreadCounts]);
 
     return (
         <Layout style={{ height: "calc(100vh - 150px)", background: colorBgContainer }}>

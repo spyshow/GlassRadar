@@ -85,7 +85,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
 
     const { mutate: sendMessage, isLoading: isSending } = useCreate({
         successNotification: false,
-    });
+    }) as any;
 
     const handleSend = () => {
         if (!message.trim() || !identity) return;

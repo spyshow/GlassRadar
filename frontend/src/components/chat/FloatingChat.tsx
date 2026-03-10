@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Card, Select, theme, Badge, notification } from "antd";
+import React, { useState, useEffect, useRef } from "react";
+import { Button, Card, Select, theme, Badge, App } from "antd";
 import { useList, useSubscription, useGetIdentity, HttpError } from "@refinedev/core";
 import { MessageOutlined, ExpandOutlined, ShrinkOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 import { ChatWindow } from "./ChatWindow";
@@ -36,9 +36,16 @@ export const FloatingChat: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [activeChannel, setActiveChannel] = useState("general");
     const [recipient, setRecipient] = useState<{ id: string, name: string } | null>(null);
-    const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
     const { token } = theme.useToken();
+    const { notification } = App.useApp();
     const { data: identity } = useGetIdentity<Identity>();
+    
+    // Use ref to avoid stale closures in useSubscription
+    const identityRef = useRef(identity);
+    useEffect(() => {
+        identityRef.current = identity;
+    }, [identity]);
 
     const channels = React.useMemo(() => {
         const baseChannels = [
@@ -80,10 +87,12 @@ export const FloatingChat: React.FC = () => {
             setRecipient(null);
             setActiveChannel(value);
         }
+        
+        // Clear unread count for the selected channel
+        setUnreadCounts(prev => ({ ...prev, [value]: 0 }));
     };
 
     // Global subscription for notifications and badges
-    // Using explicit channel property for Refine v5
     useSubscription({
         channel: "resources/messages",
         meta: {
@@ -91,38 +100,59 @@ export const FloatingChat: React.FC = () => {
         },
         onLiveEvent: (event) => {
             const newMessage = event.payload as unknown as Message;
+            const currentIdentity = identityRef.current;
             
             // Only count/notify if it's not from the current user
-            if (newMessage.senderId !== identity?.id) {
+            if (newMessage.senderId !== currentIdentity?.id) {
+                const messageChannel = newMessage.isPrivate ? `user_${newMessage.senderId}` : newMessage.channel;
                 
                 // Trigger notification for DMs directed to current user
-                if (newMessage.isPrivate && newMessage.recipientId === identity?.id) {
+                if (newMessage.isPrivate && newMessage.recipientId === currentIdentity?.id) {
+                    const key = `open${Date.now()}`;
                     notification.info({
                         message: `New message from ${newMessage.senderName}`,
                         description: newMessage.content,
                         placement: "bottomLeft",
-                        onClick: () => {
-                            setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
-                            setActiveChannel(`user_${newMessage.senderId}`);
-                            setVisible(true);
-                        }
+                        duration: 5,
+                        key,
+                        btn: (
+                            <Button 
+                                type="primary" 
+                                size="small" 
+                                onClick={() => {
+                                    setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
+                                    setActiveChannel(`user_${newMessage.senderId}`);
+                                    setVisible(true);
+                                    setUnreadCounts(prev => ({ ...prev, [`user_${newMessage.senderId}`]: 0 }));
+                                    notification.destroy(key);
+                                }}
+                            >
+                                View Chat
+                            </Button>
+                        ),
                     });
                 }
 
-                // Increment badge count if window is hidden
-                if (!visible) {
-                    setUnreadCount(prev => prev + 1);
+                // Increment unread count if channel is not currently active OR window is hidden
+                if (!visible || activeChannel !== messageChannel) {
+                    setUnreadCounts(prev => ({
+                        ...prev,
+                        [messageChannel]: (prev[messageChannel] || 0) + 1
+                    }));
                 }
             }
         }
     });
 
-    // Reset unread count when opening the window
+    // Reset unread count for current channel when opening/changing visibility
     useEffect(() => {
-        if (visible) {
-            setUnreadCount(0);
+        if (visible && activeChannel) {
+            setUnreadCounts(prev => ({ ...prev, [activeChannel]: 0 }));
         }
-    }, [visible]);
+    }, [visible, activeChannel]);
+
+    // Total unread count for the floating button
+    const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
 
     return (
         <div style={{
@@ -134,7 +164,7 @@ export const FloatingChat: React.FC = () => {
             transition: "all 0.3s ease",
         }}>
             {!visible ? (
-                <Badge count={unreadCount} offset={[-10, 0]}>
+                <Badge count={totalUnread} offset={[-10, 0]}>
                     <Button
                         type="primary"
                         icon={<MessageOutlined />}
@@ -167,12 +197,22 @@ export const FloatingChat: React.FC = () => {
                             >
                                 <Select.OptGroup label="Channels">
                                     {channels.map((c) => (
-                                        <Select.Option key={c.value} value={c.value}>{c.label}</Select.Option>
+                                        <Select.Option key={c.value} value={c.value}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                                <span>{c.label}</span>
+                                                {unreadCounts[c.value] > 0 && <Badge count={unreadCounts[c.value]} size="small" />}
+                                            </div>
+                                        </Select.Option>
                                     ))}
                                 </Select.OptGroup>
                                 <Select.OptGroup label="Staff">
                                     {staffOptions.map((s) => (
-                                        <Select.Option key={s.value} value={s.value}>{s.label}</Select.Option>
+                                        <Select.Option key={s.value} value={s.value}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                                <span>{s.label}</span>
+                                                {unreadCounts[s.value] > 0 && <Badge count={unreadCounts[s.value]} size="small" />}
+                                            </div>
+                                        </Select.Option>
                                     ))}
                                 </Select.OptGroup>
                             </Select>
