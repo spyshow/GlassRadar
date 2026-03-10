@@ -1,8 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Select, theme, Badge, notification } from "antd";
-import { useList, useSubscription, useGetIdentity } from "@refinedev/core";
+import { useList, useSubscription, useGetIdentity, HttpError } from "@refinedev/core";
 import { MessageOutlined, ExpandOutlined, ShrinkOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 import { ChatWindow } from "./ChatWindow";
+
+interface Identity {
+    id: string;
+    name: string;
+    role?: string;
+}
+
+interface UserProfile {
+    userId: string;
+    name: string;
+    email?: string;
+    avatar?: string;
+    position?: string;
+    role?: string;
+}
+
+interface Message {
+    id: string;
+    $id?: string;
+    content: string;
+    senderId: string;
+    senderName: string;
+    senderRole: string;
+    channel: string;
+    timestamp: string;
+    recipientId?: string;
+    isPrivate?: boolean;
+}
 
 export const FloatingChat: React.FC = () => {
     const [visible, setVisible] = useState(false);
@@ -10,28 +38,31 @@ export const FloatingChat: React.FC = () => {
     const [recipient, setRecipient] = useState<{ id: string, name: string } | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const { token } = theme.useToken();
-    const { data: identity } = useGetIdentity<any>();
+    const { data: identity } = useGetIdentity<Identity>();
 
-    const { query } = useList<any>({
+    const channels = React.useMemo(() => {
+        const baseChannels = [
+            { value: "general", label: "General", icon: <TeamOutlined /> },
+            { value: "IS", label: "IS Machine", icon: <TeamOutlined /> },
+            { value: "QC", label: "Quality Control", icon: <TeamOutlined /> },
+            { value: "QA", label: "Quality Assurance", icon: <TeamOutlined /> },
+            { value: "mold", label: "Mold Shop", icon: <TeamOutlined /> },
+        ];
+
+        if (identity?.role === "admin") {
+            baseChannels.push({ value: "global", label: "Global Logs", icon: <ExpandOutlined /> });
+        }
+        return baseChannels;
+    }, [identity]);
+
+    const { query } = useList<UserProfile, HttpError>({
         resource: "users",
         pagination: { mode: "off" }
     });
 
     const { data: staffData } = query;
 
-    const channels = [
-        { value: "general", label: "General", icon: <TeamOutlined /> },
-        { value: "IS", label: "IS Machine", icon: <TeamOutlined /> },
-        { value: "QC", label: "Quality Control", icon: <TeamOutlined /> },
-        { value: "QA", label: "Quality Assurance", icon: <TeamOutlined /> },
-        { value: "mold", label: "Mold Shop", icon: <TeamOutlined /> },
-    ];
-
-    if (identity?.role === "admin") {
-        channels.push({ value: "global", label: "Global Logs", icon: <ExpandOutlined /> });
-    }
-
-    const staffOptions = staffData?.data.map((user: any) => ({
+    const staffOptions = staffData?.data.map((user: UserProfile) => ({
         value: `user_${user.userId}`,
         label: user.name,
         icon: <UserOutlined />,
@@ -40,7 +71,7 @@ export const FloatingChat: React.FC = () => {
     const handleSelectChange = (value: string) => {
         if (value.startsWith("user_")) {
             const userId = value.replace("user_", "");
-            const user = staffData?.data.find((u: any) => u.userId === userId);
+            const user = staffData?.data.find((u: UserProfile) => u.userId === userId);
             if (user) {
                 setRecipient({ id: user.userId, name: user.name });
                 setActiveChannel(value);
@@ -58,8 +89,8 @@ export const FloatingChat: React.FC = () => {
         meta: {
             types: ["created"]
         },
-        onLiveEvent: (event: any) => {
-            const newMessage = event.payload;
+        onLiveEvent: (event) => {
+            const newMessage = event.payload as unknown as Message;
             
             // Only count/notify if it's not from the current user
             if (newMessage.senderId !== identity?.id) {
@@ -135,12 +166,12 @@ export const FloatingChat: React.FC = () => {
                                 dropdownStyle={{ zIndex: 1001 }}
                             >
                                 <Select.OptGroup label="Channels">
-                                    {channels.map((c: any) => (
+                                    {channels.map((c) => (
                                         <Select.Option key={c.value} value={c.value}>{c.label}</Select.Option>
                                     ))}
                                 </Select.OptGroup>
                                 <Select.OptGroup label="Staff">
-                                    {staffOptions.map((s: any) => (
+                                    {staffOptions.map((s) => (
                                         <Select.Option key={s.value} value={s.value}>{s.label}</Select.Option>
                                     ))}
                                 </Select.OptGroup>

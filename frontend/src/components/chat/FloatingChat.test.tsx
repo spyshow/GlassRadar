@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { FloatingChat } from './FloatingChat';
 import { TestWrapper } from '../../test/utils';
 import * as core from '@refinedev/core';
 
 // Mock Refine core hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
-    const actual = await importOriginal<any>();
+    const actual = await importOriginal<Record<string, unknown>>();
     return {
         ...actual,
         useList: vi.fn(),
@@ -24,8 +24,8 @@ describe('FloatingChat', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'u1', name: 'Admin' } });
-        (core.useList as any).mockReturnValue({
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', name: 'Admin' } });
+        (core.useList as Mock).mockReturnValue({
             query: {
                 data: { data: mockStaff },
                 isLoading: false,

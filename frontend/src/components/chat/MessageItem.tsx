@@ -1,10 +1,25 @@
 import React from "react";
-import { List, Avatar, Typography, Space, Button, Popconfirm, theme, Popover, Card, Divider } from "antd";
+import { List, Avatar, Typography, Button, Popconfirm, theme, Popover, Card, Divider } from "antd";
 import { DeleteOutlined, MessageOutlined } from "@ant-design/icons";
 import { useGetIdentity, useDelete } from "@refinedev/core";
 import dayjs from "dayjs";
 
 const { Text } = Typography;
+
+interface Identity {
+    id: string;
+    name: string;
+    role?: string;
+}
+
+interface UserProfile {
+    userId: string;
+    name: string;
+    email?: string;
+    avatar?: string;
+    position?: string;
+    role?: string;
+}
 
 interface MessageItemProps {
     id?: string;
@@ -15,7 +30,7 @@ interface MessageItemProps {
     senderId: string;
     showDetails?: boolean;
     onUserClick?: (user: { id: string, name: string }) => void;
-    users?: any[];
+    users?: UserProfile[];
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
@@ -29,7 +44,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     onUserClick,
     users = []
 }) => {
-    const { data: identity } = useGetIdentity<any>();
+    const { data: identity } = useGetIdentity<Identity>();
     const { mutate: deleteMessage } = useDelete();
     const { token } = theme.useToken();
 

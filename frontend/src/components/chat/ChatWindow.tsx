@@ -1,22 +1,49 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { useList, useCreate, useGetIdentity } from "@refinedev/core";
+import { useList, useCreate, useGetIdentity, HttpError } from "@refinedev/core";
 import { List, Input, Button, Card, Space, Spin } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { MessageItem } from "./MessageItem";
 import { getPrivateChannelId } from "../../utility/chatUtils";
+
+interface Identity {
+    id: string;
+    name: string;
+    role?: string;
+}
+
+interface Message {
+    id: string;
+    $id?: string;
+    content: string;
+    senderId: string;
+    senderName: string;
+    senderRole: string;
+    channel: string;
+    timestamp: string;
+    recipientId?: string;
+    isPrivate?: boolean;
+}
+
+interface UserProfile {
+    userId: string;
+    name: string;
+    email?: string;
+    avatar?: string;
+    position?: string;
+    role?: string;
+}
 
 interface ChatWindowProps {
     channel?: string;
     recipient?: { id: string, name: string } | null;
     height?: string | number;
     onUserClick?: (user: { id: string, name: string }) => void;
-    users?: any[];
+    users?: UserProfile[];
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", recipient, height = "100%", onUserClick, users }) => {
     const [message, setMessage] = useState("");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: identity } = useGetIdentity<any>();
+    const { data: identity } = useGetIdentity<Identity>();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Compute the actual channel ID. 
@@ -30,7 +57,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
 
     const isAdmin = identity?.role === "admin";
 
-    const { query } = useList({
+    const { query } = useList<Message, HttpError>({
         resource: "messages",
         filters: (channel === "global" && isAdmin) ? [] : [
             {
@@ -58,7 +85,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
 
     const { mutate: sendMessage, isLoading: isSending } = useCreate({
         successNotification: false,
-    }) as any;
+    });
 
     const handleSend = () => {
         if (!message.trim() || !identity) return;
@@ -109,8 +136,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
                 ) : (
                     <List
                         dataSource={data?.data}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        renderItem={(item: any, index: number) => {
+                        renderItem={(item: Message, index: number) => {
                             const prevItem = data?.data[index - 1];
                             const isConsecutive = prevItem && prevItem.senderId === item.senderId;
                             

@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import { ChatPage } from './index';
 import { TestWrapper } from '../../test/utils';
+import * as core from '@refinedev/core';
 
 // Mock Refine core hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
-    const actual = await importOriginal<any>();
+    const actual = await importOriginal<Record<string, unknown>>();
     return {
         ...actual,
         useList: vi.fn(),
@@ -16,8 +17,6 @@ vi.mock('@refinedev/core', async (importOriginal) => {
     };
 });
 
-import { useList } from '@refinedev/core';
-
 describe('ChatPage', () => {
     it('should render staff list in sidebar', () => {
         const mockStaff = [
@@ -25,7 +24,7 @@ describe('ChatPage', () => {
             { userId: '2', name: 'Jane Smith', email: 'jane@example.com' },
         ];
 
-        (useList as any).mockImplementation(({ resource }: { resource: string }) => {
+        (core.useList as Mock).mockImplementation(({ resource }: { resource: string }) => {
             if (resource === 'users') {
                 return {
                     query: {
@@ -50,7 +49,7 @@ describe('ChatPage', () => {
     });
 
     it('should render public channels', () => {
-        (useList as any).mockReturnValue({
+        (core.useList as Mock).mockReturnValue({
             query: {
                 data: { data: [] },
                 isLoading: false,

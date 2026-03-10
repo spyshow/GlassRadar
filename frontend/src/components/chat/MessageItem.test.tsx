@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { MessageItem } from './MessageItem';
 import { TestWrapper } from '../../test/utils';
 import * as core from '@refinedev/core';
 
 // Mock Refine core hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
-    const actual = await importOriginal<any>();
+    const actual = await importOriginal<Record<string, unknown>>();
     return {
         ...actual,
         useGetIdentity: vi.fn(),
@@ -22,7 +22,7 @@ describe('MessageItem', () => {
     });
 
     it('should render message content and sender name', () => {
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'u1', role: 'user' } });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', role: 'user' } });
         
         render(
             <TestWrapper>
@@ -42,7 +42,7 @@ describe('MessageItem', () => {
     });
 
     it('should show delete button for the owner', () => {
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'u1', role: 'user' } });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', role: 'user' } });
 
         render(
             <TestWrapper>
@@ -61,7 +61,7 @@ describe('MessageItem', () => {
     });
 
     it('should show delete button for admin even if not owner', () => {
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'admin-id', role: 'admin' } });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'admin-id', role: 'admin' } });
 
         render(
             <TestWrapper>
@@ -80,7 +80,7 @@ describe('MessageItem', () => {
     });
 
     it('should NOT show delete button for non-owner non-admin', () => {
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'u1', role: 'user' } });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', role: 'user' } });
 
         render(
             <TestWrapper>
@@ -100,8 +100,8 @@ describe('MessageItem', () => {
 
     it('should call deleteMessage on confirm', async () => {
         const deleteMutate = vi.fn();
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'u1', role: 'user' } });
-        (core.useDelete as any).mockReturnValue({ mutate: deleteMutate });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', role: 'user' } });
+        (core.useDelete as Mock).mockReturnValue({ mutate: deleteMutate });
 
         render(
             <TestWrapper>
@@ -125,6 +125,30 @@ describe('MessageItem', () => {
         expect(deleteMutate).toHaveBeenCalledWith({
             resource: "messages",
             id: "msg-123",
+        });
+    });
+
+    it('should show user details in popover on hover', async () => {
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'u1', role: 'user' } });
+
+        render(
+            <TestWrapper>
+                <MessageItem
+                    id="1"
+                    content="Hello world"
+                    senderName="John Doe"
+                    senderRole="admin"
+                    timestamp={new Date().toISOString()}
+                    senderId="u1"
+                />
+            </TestWrapper>
+        );
+
+        const nameElement = screen.getByText('John Doe');
+        fireEvent.mouseEnter(nameElement);
+
+        await waitFor(() => {
+            expect(screen.getByText('ADMIN')).toBeInTheDocument();
         });
     });
 });

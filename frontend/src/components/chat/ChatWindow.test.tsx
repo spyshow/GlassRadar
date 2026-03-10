@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { ChatWindow } from './ChatWindow';
 import { TestWrapper } from '../../test/utils';
 import * as core from '@refinedev/core';
 
 // Mock Refine hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
-    const actual = await importOriginal<any>();
+    const actual = await importOriginal<Record<string, unknown>>();
     return {
         ...actual,
         useList: vi.fn(),
@@ -32,14 +32,14 @@ describe('ChatWindow', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (core.useGetIdentity as any).mockReturnValue({ data: mockIdentity, isLoading: false });
-        (core.useList as any).mockReturnValue({
+        (core.useGetIdentity as Mock).mockReturnValue({ data: mockIdentity, isLoading: false });
+        (core.useList as Mock).mockReturnValue({
             query: {
                 data: { data: mockMessages },
                 isLoading: false,
             }
         });
-        (core.useCreate as any).mockReturnValue({
+        (core.useCreate as Mock).mockReturnValue({
             mutate: vi.fn(),
             isLoading: false,
         });
@@ -79,7 +79,7 @@ describe('ChatWindow', () => {
     it('should include recipientId and isPrivate when sending a DM', async () => {
         const recipient = { id: 'u2', name: 'Jane Doe' };
         const mutate = vi.fn();
-        (core.useCreate as any).mockReturnValue({
+        (core.useCreate as Mock).mockReturnValue({
             mutate,
             isLoading: false,
         });
@@ -107,7 +107,7 @@ describe('ChatWindow', () => {
     });
 
     it('should show all messages (no filter) when channel is global and user is admin', () => {
-        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'admin-1', role: 'admin' }, isLoading: false });
+        (core.useGetIdentity as Mock).mockReturnValue({ data: { id: 'admin-1', role: 'admin' }, isLoading: false });
 
         render(
             <TestWrapper>
