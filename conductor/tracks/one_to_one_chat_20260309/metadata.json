@@ -1,0 +1,7 @@
+{
+  "id": "one_to_one_chat_20260309",
+  "name": "One-to-One Messaging",
+  "objective": "Extend the chat system to support private one-to-one messaging between users with administrative oversight.",
+  "status": "in_progress",
+  "created_at": "2026-03-09"
+}
