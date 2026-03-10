@@ -26,7 +26,8 @@ GlassRadar is a high-performance, local-first monitoring and analytics platform 
 - **Secure Authentication:** Multi-role login system powered by Appwrite.
 - **User & Role Management:** Comprehensive interface for managing staff accounts and assigning industry-specific roles.
 - **Live Performance Dashboards:** Real-time tracking of machine status and production data for containers (bottles, jars, etc.).
-- **Integrated Industrial Chat:** A direct communication loop between operators, QC, QA, and the mold shop.
+- **Integrated Industrial Chat:** A direct communication loop between operators, QC, QA, and the mold shop, supporting both public department channels and secure one-to-one messaging.
+- **Administrative Compliance Oversight:** Built-in tools for administrators to monitor all communications via global logs and manage content for safety and operational compliance.
 - **Job & Mold Life-cycle Management:** Detailed tracking of job changes, mold defects, and maintenance schedules.
 - **Automated Defect Tracking:** Systematized recording and analysis of production flaws to improve yield.
 

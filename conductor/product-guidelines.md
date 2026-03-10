@@ -32,6 +32,12 @@ Critical production metrics and machine statuses must be readable from a distanc
 ### 3. Rapid Information Entry
 Minimize the number of clicks required for common tasks, such as logging a defect or responding to a chat, to ensure the system complements rather than hinders the production workflow.
 
+### 4. Direct Accountability & Context
+Use rich hover states (Popovers) in communication tools to provide instant access to user profiles, roles, and contact information without navigating away from the current task.
+
+### 5. Administrative Transparency
+Provide specialized 'Global Log' views for administrators to maintain total visibility across all communication channels, ensuring operational safety and policy compliance.
+
 ## UI Design System: Refine Standard
 To ensure rapid development and a reliable user experience, GlassRadar utilizes the **Refine Standard** design patterns.
 - **Consistency:** Leverage Refine’s built-in hooks and components for data fetching and display.
