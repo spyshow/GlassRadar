@@ -29,11 +29,12 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md) (8c80087)
 
 ## Phase 5: Notifications & Badges
-- [~] Task: Implement Unread Message Badges
-    - [ ] Track unread counts per channel/DM in `FloatingChat` and `ChatPage`.
-    - [ ] Display badges in sidebar and channel selector.
-- [~] Task: Implement DM Notifications
-    - [ ] Show Ant Design notification for new DMs when the chat is not active.
-    - [ ] Add "View Chat" button to the notification.
-- [ ] Task: Final Verification for Phase 5
+- [x] Task: Implement Unread Message Badges (8c80087)
+    - [x] Track unread counts per channel/DM in `FloatingChat` and `ChatPage`.
+    - [x] Display badges in sidebar and channel selector.
+- [x] Task: Implement DM Notifications (8c80087)
+    - [x] Show Ant Design notification for new DMs when the chat is not active.
+    - [x] Add "View Chat" button to the notification.
+- [x] Task: Final Verification for Phase 5 (8c80087)
+
 
