@@ -58,6 +58,7 @@ function App() {
                     list: "/chat",
                     meta: {
                         label: "Industrial Chat",
+                        databaseId: "default"
                     }
                   },
                   {
@@ -68,6 +69,7 @@ function App() {
                     show: "/users/show/:id",
                     meta: {
                         label: "User Management",
+                        databaseId: "default"
                     }
                   },
                   {

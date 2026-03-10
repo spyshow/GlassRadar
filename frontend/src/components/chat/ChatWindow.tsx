@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useList, useCreate, useGetIdentity } from "@refinedev/core";
 import { List, Input, Button, Card, Space, Spin } from "antd";
 import { SendOutlined } from "@ant-design/icons";
@@ -6,14 +6,27 @@ import { MessageItem } from "./MessageItem";
 
 interface ChatWindowProps {
     channel?: string;
+    recipient?: { id: string, name: string } | null;
     height?: string | number;
+    onUserClick?: (user: { id: string, name: string }) => void;
+    users?: any[];
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", height = "100%" }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", recipient, height = "100%", onUserClick, users }) => {
     const [message, setMessage] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: identity } = useGetIdentity<any>();
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Compute the actual channel ID. 
+    // For DMs, it's a stable string derived from both user IDs.
+    const actualChannel = useMemo(() => {
+        if (recipient && identity) {
+            const ids = [identity.id, recipient.id].sort();
+            return `private_${ids[0]}_${ids[1]}`;
+        }
+        return channel;
+    }, [channel, recipient, identity]);
 
     const { query } = useList({
         resource: "messages",
@@ -21,7 +34,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
             {
                 field: "channel",
                 operator: "eq",
-                value: channel,
+                value: actualChannel,
             },
         ],
         sorters: [
@@ -33,6 +46,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
         liveMode: "auto",
         pagination: {
             mode: "off",
+        },
+        meta: {
+            databaseId: "default"
         }
     });
 
@@ -40,11 +56,20 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
 
     const { mutate: sendMessage, isLoading: isSending } = useCreate({
         successNotification: false,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
 
     const handleSend = () => {
         if (!message.trim() || !identity) return;
+
+        const isPrivate = !!recipient;
+        
+        // Define document-level permissions if it's a private message
+        const permissions = isPrivate ? [
+            `read("user:${identity.id}")`,
+            `read("user:${recipient.id}")`,
+            `read("team:admin")`, 
+            `delete("team:admin")`
+        ] : undefined;
 
         sendMessage({
             resource: "messages",
@@ -53,9 +78,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
                 senderId: identity.id,
                 senderName: identity.name,
                 senderRole: identity.role || "user",
-                channel: channel,
+                channel: actualChannel,
                 timestamp: new Date().toISOString(),
+                recipientId: recipient?.id,
+                isPrivate: isPrivate,
             },
+            meta: {
+                permissions: permissions
+            }
         });
         setMessage("");
     };
@@ -78,21 +108,31 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
                     <List
                         dataSource={data?.data}
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        renderItem={(item: any) => (
-                            <MessageItem
-                                content={item.content}
-                                senderName={item.senderName}
-                                senderRole={item.senderRole}
-                                timestamp={item.timestamp}
-                            />
-                        )}
+                        renderItem={(item: any, index: number) => {
+                            const prevItem = data?.data[index - 1];
+                            const isConsecutive = prevItem && prevItem.senderId === item.senderId;
+                            
+                            return (
+                                <MessageItem
+                                    id={item.$id || item.id}
+                                    content={item.content}
+                                    senderName={item.senderName}
+                                    senderRole={item.senderRole}
+                                    timestamp={item.timestamp}
+                                    senderId={item.senderId}
+                                    showDetails={!isConsecutive}
+                                    onUserClick={onUserClick}
+                                    users={users}
+                                />
+                            );
+                        }}
                     />
                 )}
             </div>
             
             <Space.Compact style={{ width: '100%' }}>
                 <Input 
-                    placeholder="Type a message..." 
+                    placeholder={recipient ? `Message ${recipient.name}...` : "Type a message..."} 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onPressEnter={handleSend}
@@ -116,7 +156,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", hei
 
     return (
         <Card 
-            title={`Channel: ${channel.toUpperCase()}`} 
+            title={recipient ? `Chat with ${recipient.name}` : `Channel: ${channel.toUpperCase()}`} 
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
             styles={{ body: { flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" } }}
         >
