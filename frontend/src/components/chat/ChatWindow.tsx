@@ -3,6 +3,7 @@ import { useList, useCreate, useGetIdentity } from "@refinedev/core";
 import { List, Input, Button, Card, Space, Spin } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { MessageItem } from "./MessageItem";
+import { getPrivateChannelId } from "../../utility/chatUtils";
 
 interface ChatWindowProps {
     channel?: string;
@@ -22,8 +23,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
     // For DMs, it's a stable string derived from both user IDs.
     const actualChannel = useMemo(() => {
         if (recipient && identity) {
-            const ids = [identity.id, recipient.id].sort();
-            return `private_${ids[0]}_${ids[1]}`;
+            return getPrivateChannelId(identity.id, recipient.id);
         }
         return channel;
     }, [channel, recipient, identity]);

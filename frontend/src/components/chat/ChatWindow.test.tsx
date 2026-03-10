@@ -1,42 +1,50 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChatWindow } from './ChatWindow';
 import { TestWrapper } from '../../test/utils';
+import * as core from '@refinedev/core';
 
 // Mock Refine hooks
 vi.mock('@refinedev/core', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const actual = await importOriginal<any>();
     return {
         ...actual,
-        useList: () => ({
-            query: {
-                data: {
-                    data: [
-                        {
-                            $id: '1',
-                            content: 'Test message',
-                            senderName: 'Test Sender',
-                            senderRole: 'QC',
-                            timestamp: new Date().toISOString(),
-                        }
-                    ]
-                },
-                isLoading: false,
-            }
-        }),
-        useCreate: () => ({
-            mutate: vi.fn(),
-            isLoading: false,
-        }),
-        useGetIdentity: () => ({
-            data: { id: 'u1', name: 'Current User', role: 'admin' },
-            isLoading: false,
-        }),
+        useList: vi.fn(),
+        useCreate: vi.fn(),
+        useGetIdentity: vi.fn(),
+        useSubscription: vi.fn(),
+        useDelete: vi.fn(() => ({ mutate: vi.fn() })),
     };
 });
 
 describe('ChatWindow', () => {
+    const mockIdentity = { id: 'u1', name: 'Current User', role: 'admin' };
+    const mockMessages = [
+        {
+            $id: '1',
+            content: 'Test message',
+            senderName: 'Test Sender',
+            senderRole: 'QC',
+            timestamp: new Date().toISOString(),
+            senderId: 'u2'
+        }
+    ];
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        (core.useGetIdentity as any).mockReturnValue({ data: mockIdentity, isLoading: false });
+        (core.useList as any).mockReturnValue({
+            query: {
+                data: { data: mockMessages },
+                isLoading: false,
+            }
+        });
+        (core.useCreate as any).mockReturnValue({
+            mutate: vi.fn(),
+            isLoading: false,
+        });
+    });
+
     it('should render messages and input', async () => {
         render(
             <TestWrapper>
@@ -47,5 +55,54 @@ describe('ChatWindow', () => {
         expect(screen.getByText('Test Sender')).toBeInTheDocument();
         expect(screen.getByText('Test message')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Type a message...')).toBeInTheDocument();
+    });
+
+    it('should use consistent private channel ID for DMs', () => {
+        const recipient = { id: 'u2', name: 'Jane Doe' };
+        
+        render(
+            <TestWrapper>
+                <ChatWindow recipient={recipient} />
+            </TestWrapper>
+        );
+
+        expect(core.useList).toHaveBeenCalledWith(expect.objectContaining({
+            filters: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'channel',
+                    value: 'private_u1_u2' // u1 < u2
+                })
+            ])
+        }));
+    });
+
+    it('should include recipientId and isPrivate when sending a DM', async () => {
+        const recipient = { id: 'u2', name: 'Jane Doe' };
+        const mutate = vi.fn();
+        (core.useCreate as any).mockReturnValue({
+            mutate,
+            isLoading: false,
+        });
+
+        render(
+            <TestWrapper>
+                <ChatWindow recipient={recipient} />
+            </TestWrapper>
+        );
+
+        const input = screen.getByPlaceholderText('Message Jane Doe...');
+        fireEvent.change(input, { target: { value: 'Hello Jane' } });
+        fireEvent.click(screen.getByText('Send'));
+
+        await waitFor(() => {
+            expect(mutate).toHaveBeenCalledWith(expect.objectContaining({
+                values: expect.objectContaining({
+                    content: 'Hello Jane',
+                    recipientId: 'u2',
+                    isPrivate: true,
+                    channel: 'private_u1_u2'
+                })
+            }));
+        });
     });
 });
