@@ -22,8 +22,8 @@
 - [x] Task: Implement Admin Delete functionality in Chat (a9ab6e5)
     - [x] Add `DeleteButton` to `<MessageItem />` visible only to Admins.
 - [x] Task: Verify Admin can see all messages in any channel/DM. (a9ab6e5)
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Admin Oversight & Deletion' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Admin Oversight & Deletion' (Protocol in workflow.md) (a9ab6e5)
 
 ## Phase 4: Final Verification
-- [ ] Task: Final Coverage & Linting Check
+- [~] Task: Final Coverage & Linting Check
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md)
