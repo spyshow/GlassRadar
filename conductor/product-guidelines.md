@@ -38,6 +38,9 @@ Use rich hover states (Popovers) in communication tools to provide instant acces
 ### 5. Administrative Transparency
 Provide specialized 'Global Log' views for administrators to maintain total visibility across all communication channels, ensuring operational safety and policy compliance.
 
+### 6. Communication Responsiveness
+Use persistent unread badges and immediate notifications for direct messages to ensure that critical communication between production staff and support departments is never missed.
+
 ## UI Design System: Refine Standard
 To ensure rapid development and a reliable user experience, GlassRadar utilizes the **Refine Standard** design patterns.
 - **Consistency:** Leverage Refine’s built-in hooks and components for data fetching and display.
