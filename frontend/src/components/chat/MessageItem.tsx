@@ -53,7 +53,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 <Avatar size={64}>{senderName?.[0]?.toUpperCase()}</Avatar>
                 <div>
                     <Text strong style={{ fontSize: '16px', display: 'block' }}>{senderName}</Text>
-                    <Text type="secondary" style={{ display: 'block' }}>{senderRole.toUpperCase()}</Text>
+                    <Text type="secondary" style={{ display: 'block' }}>{senderRole?.toUpperCase()}</Text>
                     {userDetails?.position && <Text type="secondary" style={{ display: 'block' }}>{userDetails.position}</Text>}
                 </div>
             </div>
@@ -104,7 +104,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px', gap: '8px' }}>
                         <Popover content={userPopoverContent} trigger="hover" placement="right">
                             <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Avatar size="small">{senderName[0]?.toUpperCase()}</Avatar>
+                                <Avatar size="small">{senderName?.[0]?.toUpperCase()}</Avatar>
                                 <Text strong>{senderName}</Text>
                             </div>
                         </Popover>
