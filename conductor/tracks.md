@@ -4,11 +4,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: One-to-One Messaging**
-  *Link: [./tracks/one_to_one_chat_20260309/](./tracks/one_to_one_chat_20260309/)*
-
----
-
 - [x] **Track: Industrial Chat Loop**
   *Link: [./tracks/industrial_chat_20260309/](./tracks/industrial_chat_20260309/)*
 
