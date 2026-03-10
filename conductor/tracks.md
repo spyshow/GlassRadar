@@ -4,7 +4,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: One-to-One Messaging**
+- [~] **Track: One-to-One Messaging**
   *Link: [./tracks/one_to_one_chat_20260309/](./tracks/one_to_one_chat_20260309/)*
 
 ---

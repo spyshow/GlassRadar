@@ -35,6 +35,9 @@
 - [x] Task: Implement DM Notifications (8c80087)
     - [x] Show Ant Design notification for new DMs when the chat is not active.
     - [x] Add "View Chat" button to the notification.
+- [~] Task: Refine Synchronization & Active Channel Logic
+    - [ ] Sync unread counts between `FloatingChat` and `ChatPage` (via LocalStorage/Events).
+    - [ ] Ensure unread count does NOT increase if the user is currently viewing that specific channel/DM.
 - [x] Task: Final Verification for Phase 5 (8c80087)
 
 
