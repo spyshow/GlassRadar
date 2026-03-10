@@ -28,9 +28,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
         return channel;
     }, [channel, recipient, identity]);
 
+    const isAdmin = identity?.role === "admin";
+
     const { query } = useList({
         resource: "messages",
-        filters: [
+        filters: (channel === "global" && isAdmin) ? [] : [
             {
                 field: "channel",
                 operator: "eq",

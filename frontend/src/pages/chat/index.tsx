@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Layout, Menu, theme } from "antd";
-import { useList } from "@refinedev/core";
+import { useList, useGetIdentity } from "@refinedev/core";
 import {
     MessageOutlined,
     TeamOutlined,
     SafetyCertificateOutlined,
     SettingOutlined,
     ToolOutlined,
-    UserOutlined
+    UserOutlined,
+    ExpandOutlined
 } from "@ant-design/icons";
 import { ChatWindow } from "../../components/chat/ChatWindow";
 import type { MenuProps } from 'antd';
@@ -25,6 +26,7 @@ export const ChatPage: React.FC = () => {
     });
 
     const { data: staffData } = query;
+    const { data: identity } = useGetIdentity<any>();
 
     const channels = [
         { key: "general", label: "General", icon: <MessageOutlined /> },
@@ -33,6 +35,10 @@ export const ChatPage: React.FC = () => {
         { key: "QA", label: "Quality Assurance", icon: <SettingOutlined /> },
         { key: "mold", label: "Mold Shop", icon: <ToolOutlined /> },
     ];
+
+    if (identity?.role === "admin") {
+        channels.push({ key: "global", label: "Global Logs", icon: <ExpandOutlined /> });
+    }
 
     const handleMenuClick: MenuProps['onClick'] = (info) => {
         const key = info.key;

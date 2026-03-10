@@ -105,4 +105,18 @@ describe('ChatWindow', () => {
             }));
         });
     });
+
+    it('should show all messages (no filter) when channel is global and user is admin', () => {
+        (core.useGetIdentity as any).mockReturnValue({ data: { id: 'admin-1', role: 'admin' }, isLoading: false });
+
+        render(
+            <TestWrapper>
+                <ChatWindow channel="global" />
+            </TestWrapper>
+        );
+
+        expect(core.useList).toHaveBeenCalledWith(expect.objectContaining({
+            filters: []
+        }));
+    });
 });

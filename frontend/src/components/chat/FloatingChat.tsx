@@ -27,6 +27,10 @@ export const FloatingChat: React.FC = () => {
         { value: "mold", label: "Mold Shop", icon: <TeamOutlined /> },
     ];
 
+    if (identity?.role === "admin") {
+        channels.push({ value: "global", label: "Global Logs", icon: <ExpandOutlined /> });
+    }
+
     const staffOptions = staffData?.data.map((user: any) => ({
         value: `user_${user.userId}`,
         label: user.name,
