@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Developer DevOps Pipeline
 
 ## Phase 1: Continuous Integration (CI) Pipeline
-- [~] Task: Create GitHub Actions workflow file `.github/workflows/ci.yml`
+- [x] Task: Create GitHub Actions workflow file `.github/workflows/ci.yml` (55110e4)
     - [ ] Define triggers for `push` (all branches) and `pull_request` (to `main`).
     - [ ] Add jobs to build frontend and backend test images.
     - [ ] Add jobs to run `npm test` for frontend and backend.
