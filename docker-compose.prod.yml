@@ -1017,10 +1017,7 @@ services:
       start_period: 30s
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: production
+    image: ${DOCKERHUB_USERNAME:-spyshow}/glassradar-frontend:latest
     container_name: ${CONTAINER_NAME_PREFIX:-glassradar-prod}-frontend
     <<: *x-logging
     restart: always
