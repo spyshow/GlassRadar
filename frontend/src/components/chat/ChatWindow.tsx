@@ -83,9 +83,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ channel = "general", rec
 
     const { data, isLoading } = query;
 
-    const { mutate: sendMessage, isPending: isSending } = useCreate<Message, HttpError>({
+    const { mutate: sendMessage, mutation } = useCreate<Message, HttpError>({
         successNotification: false,
     });
+    const isSending = mutation.isPending;
 
     const handleSend = () => {
         if (!message.trim() || !identity) return;

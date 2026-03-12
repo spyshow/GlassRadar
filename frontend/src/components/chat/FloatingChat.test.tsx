@@ -11,7 +11,7 @@ vi.mock('@refinedev/core', async (importOriginal) => {
         ...actual,
         useList: vi.fn(),
         useGetIdentity: vi.fn(),
-        useCreate: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+        useCreate: vi.fn(() => ({ mutate: vi.fn(), mutation: { isPending: false } })),
         useSubscription: vi.fn(),
         useDelete: vi.fn(() => ({ mutate: vi.fn() })),
     };
