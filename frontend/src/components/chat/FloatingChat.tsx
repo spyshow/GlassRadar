@@ -3,6 +3,7 @@ import { Button, Card, Select, theme, Badge, App } from "antd";
 import { useList, useSubscription, useGetIdentity, HttpError } from "@refinedev/core";
 import { MessageOutlined, ExpandOutlined, ShrinkOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 import { ChatWindow } from "./ChatWindow";
+import { chatEvents, getStoredUnreadCounts, storeUnreadCounts } from "../../utility";
 
 interface Identity {
     id: string;
@@ -36,16 +37,48 @@ export const FloatingChat: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [activeChannel, setActiveChannel] = useState("general");
     const [recipient, setRecipient] = useState<{ id: string, name: string } | null>(null);
-    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>(getStoredUnreadCounts());
     const { token } = theme.useToken();
     const { notification } = App.useApp();
     const { data: identity } = useGetIdentity<Identity>();
     
+    // Track active channel in page vs floating
+    const pageActiveChannelRef = useRef<string | null>(null);
+
     // Use ref to avoid stale closures in useSubscription
     const identityRef = useRef(identity);
     useEffect(() => {
         identityRef.current = identity;
     }, [identity]);
+
+    // Handle incoming events from ChatPage
+    useEffect(() => {
+        const unsubscribe = chatEvents.subscribe((event) => {
+            if (event.type === 'ACTIVE_CHANNEL_CHANGED' && event.payload.source === 'page') {
+                pageActiveChannelRef.current = event.payload.channel;
+            } else if (event.type === 'UNREAD_COUNTS_UPDATED') {
+                setUnreadCounts(event.payload);
+            }
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
+    // Emit our active channel when it changes
+    useEffect(() => {
+        if (visible) {
+            chatEvents.emit({ 
+                type: 'ACTIVE_CHANNEL_CHANGED', 
+                payload: { channel: activeChannel, source: 'floating' } 
+            });
+        } else {
+            chatEvents.emit({ 
+                type: 'ACTIVE_CHANNEL_CHANGED', 
+                payload: { channel: '', source: 'floating' } 
+            });
+        }
+    }, [activeChannel, visible]);
 
     const channels = React.useMemo(() => {
         const baseChannels = [
@@ -89,7 +122,9 @@ export const FloatingChat: React.FC = () => {
         }
         
         // Clear unread count for the selected channel
-        setUnreadCounts(prev => ({ ...prev, [value]: 0 }));
+        const newCounts = { ...unreadCounts, [value]: 0 };
+        setUnreadCounts(newCounts);
+        storeUnreadCounts(newCounts);
     };
 
     // Global subscription for notifications and badges
@@ -106,48 +141,67 @@ export const FloatingChat: React.FC = () => {
             if (newMessage.senderId !== currentIdentity?.id) {
                 const messageChannel = newMessage.isPrivate ? `user_${newMessage.senderId}` : newMessage.channel;
                 
-                // Trigger notification for DMs directed to current user
+                // 1. Notification Logic (Only for DMs directed to me)
                 if (newMessage.isPrivate && newMessage.recipientId === currentIdentity?.id) {
-                    const key = `open${Date.now()}`;
-                    notification.info({
-                        message: `New message from ${newMessage.senderName}`,
-                        description: newMessage.content,
-                        placement: "bottomLeft",
-                        duration: 5,
-                        key,
-                        btn: (
-                            <Button 
-                                type="primary" 
-                                size="small" 
-                                onClick={() => {
-                                    setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
-                                    setActiveChannel(`user_${newMessage.senderId}`);
-                                    setVisible(true);
-                                    setUnreadCounts(prev => ({ ...prev, [`user_${newMessage.senderId}`]: 0 }));
-                                    notification.destroy(key);
-                                }}
-                            >
-                                View Chat
-                            </Button>
-                        ),
-                    });
+                    // Show notification if NOT currently in that specific DM channel (neither in floating nor page)
+                    const isLookingAtThisDM = (visible && activeChannel === messageChannel) || (pageActiveChannelRef.current === messageChannel);
+                    
+                    if (!isLookingAtThisDM) {
+                        const key = `open${Date.now()}`;
+                        notification.info({
+                            message: `New message from ${newMessage.senderName}`,
+                            description: newMessage.content,
+                            placement: "bottomLeft",
+                            duration: 5,
+                            key,
+                            btn: (
+                                <Button 
+                                    type="primary" 
+                                    size="small" 
+                                    onClick={() => {
+                                        setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
+                                        setActiveChannel(`user_${newMessage.senderId}`);
+                                        setVisible(true);
+                                        const nextCounts = { ...unreadCounts, [`user_${newMessage.senderId}`]: 0 };
+                                        setUnreadCounts(nextCounts);
+                                        storeUnreadCounts(nextCounts);
+                                        notification.destroy(key);
+                                    }}
+                                >
+                                    View Chat
+                                </Button>
+                            ),
+                        });
+                    }
                 }
 
-                // Increment unread count if channel is not currently active OR window is hidden
-                if (!visible || activeChannel !== messageChannel) {
-                    setUnreadCounts(prev => ({
-                        ...prev,
-                        [messageChannel]: (prev[messageChannel] || 0) + 1
-                    }));
+                // 2. Unread Badge Logic
+                // Increment unread count if the channel is NOT currently active in floating AND NOT active in main page
+                const isChannelActiveAnywhere = (visible && activeChannel === messageChannel) || (pageActiveChannelRef.current === messageChannel);
+                
+                if (!isChannelActiveAnywhere) {
+                    setUnreadCounts(prev => {
+                        const next = {
+                            ...prev,
+                            [messageChannel]: (prev[messageChannel] || 0) + 1
+                        };
+                        storeUnreadCounts(next);
+                        return next;
+                    });
                 }
             }
         }
     });
 
-    // Reset unread count for current channel when opening/changing visibility
+    // Reset unread count for current channel when opening/changing channel
     useEffect(() => {
         if (visible && activeChannel) {
-            setUnreadCounts(prev => ({ ...prev, [activeChannel]: 0 }));
+            setUnreadCounts(prev => {
+                if (prev[activeChannel] === 0) return prev;
+                const next = { ...prev, [activeChannel]: 0 };
+                storeUnreadCounts(next);
+                return next;
+            });
         }
     }, [visible, activeChannel]);
 

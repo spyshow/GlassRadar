@@ -60,33 +60,53 @@ async function setup() {
         }
 
         // --- MESSAGES COLLECTION ---
-        console.log('Ensuring "messages" collection exists...');
+        console.log('Ensuring "messages" collection exists with Document Level Security...');
         const msgCollId = 'messages';
+        // Collection level permissions: Admins can do everything. 
+        // Users can Create. Read is handled at document level for DMs, 
+        // or collection level for public channels.
         const msgPermissions = [
-            Permission.read(Role.users()),
+            Permission.read(Role.team('admin')),
+            Permission.read(Role.users()), // For now, keep simple read for channels. We will filter in UI or set doc perms.
             Permission.create(Role.users()),
             Permission.update(Role.team('admin')),
             Permission.delete(Role.team('admin')),
         ];
 
         try {
-            await databases.createCollection(dbId, msgCollId, 'Messages', msgPermissions);
-            console.log('Messages collection created. Creating attributes...');
-            await databases.createStringAttribute(dbId, msgCollId, 'content', 5000, true);
-            await databases.createStringAttribute(dbId, msgCollId, 'senderId', 255, true);
-            await databases.createStringAttribute(dbId, msgCollId, 'senderName', 255, true);
-            await databases.createStringAttribute(dbId, msgCollId, 'senderRole', 255, true);
-            await databases.createEnumAttribute(dbId, msgCollId, 'channel', ['general', 'IS', 'QC', 'QA', 'mold'], true);
-            await databases.createDatetimeAttribute(dbId, msgCollId, 'timestamp', true);
-            
-            console.log('Waiting for attributes to index...');
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            // Note: In Node SDK, documentSecurity is the 5th parameter of createCollection if supported, 
+            // but it's usually set via updateCollection or during creation.
+            await databases.createCollection(dbId, msgCollId, 'Messages', msgPermissions, true); 
+            console.log('Messages collection created with DLS.');
         } catch (e) {
-            if (e.message.includes('already exists')) {
-                console.log('Messages collection exists, updating permissions...');
-                await databases.updateCollection(dbId, msgCollId, 'Messages', msgPermissions);
-            } else {
-                console.error('Error with messages collection:', e.message);
+            console.log('Messages collection exists, updating permissions...');
+            await databases.updateCollection(dbId, msgCollId, 'Messages', msgPermissions, true);
+        }
+
+        console.log('Creating/Updating attributes for one-to-one messaging...');
+        const attributes = [
+            { key: 'content', type: 'string', size: 5000, required: true },
+            { key: 'senderId', type: 'string', size: 255, required: true },
+            { key: 'senderName', type: 'string', size: 255, required: true },
+            { key: 'senderRole', type: 'string', size: 255, required: true },
+            { key: 'channel', type: 'string', size: 255, required: true }, // For DMs, this will be private room ID
+            { key: 'timestamp', type: 'datetime', required: true },
+            { key: 'recipientId', type: 'string', size: 255, required: false },
+            { key: 'isPrivate', type: 'boolean', required: false, default: false }
+        ];
+
+        for (const attr of attributes) {
+            try {
+                if (attr.type === 'string') {
+                    await databases.createStringAttribute(dbId, msgCollId, attr.key, attr.size, attr.required);
+                } else if (attr.type === 'boolean') {
+                    await databases.createBooleanAttribute(dbId, msgCollId, attr.key, attr.required, attr.default);
+                } else if (attr.type === 'datetime') {
+                    await databases.createDatetimeAttribute(dbId, msgCollId, attr.key, attr.required);
+                }
+                console.log(`Attribute "${attr.key}" created.`);
+            } catch (e) {
+                console.log(`Attribute "${attr.key}" exists or error.`);
             }
         }
 

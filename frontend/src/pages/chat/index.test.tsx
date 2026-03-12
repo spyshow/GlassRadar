@@ -11,7 +11,7 @@ vi.mock('@refinedev/core', async (importOriginal) => {
         ...actual,
         useList: vi.fn(),
         useGetIdentity: vi.fn(() => ({ data: { id: 'current-user', name: 'Current User' } })),
-        useCreate: vi.fn(() => ({ mutate: vi.fn(), isLoading: false })),
+        useCreate: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
         useSubscription: vi.fn(),
         useDelete: vi.fn(() => ({ mutate: vi.fn() })),
     };
