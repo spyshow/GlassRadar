@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Layout, Menu, theme, Badge, App } from "antd";
+import { Layout, Menu, theme, Badge } from "antd";
 import { useList, useGetIdentity, HttpError, useSubscription } from "@refinedev/core";
 import {
     MessageOutlined,
@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import { ChatWindow } from "../../components/chat/ChatWindow";
 import type { MenuProps } from 'antd';
+import { chatEvents, getStoredUnreadCounts, storeUnreadCounts } from "../../utility";
 
 const { Sider, Content } = Layout;
 
@@ -46,9 +47,8 @@ interface Message {
 export const ChatPage: React.FC = () => {
     const [activeKey, setActiveKey] = useState("general");
     const [recipient, setRecipient] = useState<{ id: string, name: string } | null>(null);
-    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+    const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>(getStoredUnreadCounts());
     const { token: { colorBgContainer } } = theme.useToken();
-    const { notification } = App.useApp();
 
     const { query } = useList<UserProfile, HttpError>({
         resource: "users",
@@ -58,11 +58,44 @@ export const ChatPage: React.FC = () => {
     const { data: staffData } = query;
     const { data: identity } = useGetIdentity<Identity>();
     
+    // Track active channel in floating chat
+    const floatingActiveChannelRef = useRef<string | null>(null);
+
     // Use ref to avoid stale closures in useSubscription
     const identityRef = useRef(identity);
     useEffect(() => {
         identityRef.current = identity;
     }, [identity]);
+
+    // Handle incoming events from FloatingChat
+    useEffect(() => {
+        const unsubscribe = chatEvents.subscribe((event) => {
+            if (event.type === 'ACTIVE_CHANNEL_CHANGED' && event.payload.source === 'floating') {
+                floatingActiveChannelRef.current = event.payload.channel;
+            } else if (event.type === 'UNREAD_COUNTS_UPDATED') {
+                setUnreadCounts(event.payload);
+            }
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
+    // Emit our active channel when it changes
+    useEffect(() => {
+        chatEvents.emit({ 
+            type: 'ACTIVE_CHANNEL_CHANGED', 
+            payload: { channel: activeKey, source: 'page' } 
+        });
+        
+        // Ensure cleanup when unmounting page
+        return () => {
+            chatEvents.emit({ 
+                type: 'ACTIVE_CHANNEL_CHANGED', 
+                payload: { channel: '', source: 'page' } 
+            });
+        };
+    }, [activeKey]);
 
     const channels = React.useMemo(() => {
         const baseChannels = [
@@ -94,10 +127,12 @@ export const ChatPage: React.FC = () => {
         }
         
         // Clear unread count
-        setUnreadCounts(prev => ({ ...prev, [key]: 0 }));
+        const newCounts = { ...unreadCounts, [key]: 0 };
+        setUnreadCounts(newCounts);
+        storeUnreadCounts(newCounts);
     };
 
-    // Subscription for unread counts and notifications
+    // Subscription for unread counts ONLY (Notifications handled by FloatingChat globally)
     useSubscription({
         channel: "resources/messages",
         meta: {
@@ -110,27 +145,18 @@ export const ChatPage: React.FC = () => {
             if (newMessage.senderId !== currentIdentity?.id) {
                 const messageChannel = newMessage.isPrivate ? `user_${newMessage.senderId}` : newMessage.channel;
                 
-                // Trigger notification for DMs directed to current user
-                if (newMessage.isPrivate && newMessage.recipientId === currentIdentity?.id) {
-                    notification.info({
-                        message: `New message from ${newMessage.senderName}`,
-                        description: newMessage.content,
-                        placement: "bottomLeft",
-                        duration: 5,
-                        onClick: () => {
-                            setRecipient({ id: newMessage.senderId, name: newMessage.senderName });
-                            setActiveKey(`user_${newMessage.senderId}`);
-                            setUnreadCounts(prev => ({ ...prev, [`user_${newMessage.senderId}`]: 0 }));
-                        }
+                // Increment unread count if channel is not currently active anywhere
+                const isChannelActiveAnywhere = (activeKey === messageChannel) || (floatingActiveChannelRef.current === messageChannel);
+                
+                if (!isChannelActiveAnywhere) {
+                    setUnreadCounts(prev => {
+                        const next = {
+                            ...prev,
+                            [messageChannel]: (prev[messageChannel] || 0) + 1
+                        };
+                        storeUnreadCounts(next);
+                        return next;
                     });
-                }
-
-                // Increment unread count if channel is not currently active
-                if (activeKey !== messageChannel) {
-                    setUnreadCounts(prev => ({
-                        ...prev,
-                        [messageChannel]: (prev[messageChannel] || 0) + 1
-                    }));
                 }
             }
         }
@@ -139,7 +165,12 @@ export const ChatPage: React.FC = () => {
     // Reset unread count for current channel
     useEffect(() => {
         if (activeKey) {
-            setUnreadCounts(prev => ({ ...prev, [activeKey]: 0 }));
+            setUnreadCounts(prev => {
+                if (prev[activeKey] === 0) return prev;
+                const next = { ...prev, [activeKey]: 0 };
+                storeUnreadCounts(next);
+                return next;
+            });
         }
     }, [activeKey]);
 
