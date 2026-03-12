@@ -41,7 +41,7 @@ describe('ChatWindow', () => {
         });
         (core.useCreate as Mock).mockReturnValue({
             mutate: vi.fn(),
-            isLoading: false,
+            isPending: false,
         });
     });
 
@@ -81,7 +81,7 @@ describe('ChatWindow', () => {
         const mutate = vi.fn();
         (core.useCreate as Mock).mockReturnValue({
             mutate,
-            isLoading: false,
+            isPending: false,
         });
 
         render(
