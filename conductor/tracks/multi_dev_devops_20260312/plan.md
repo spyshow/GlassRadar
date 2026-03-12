@@ -2,12 +2,12 @@
 
 ## Phase 1: Continuous Integration (CI) Pipeline
 - [x] Task: Create GitHub Actions workflow file `.github/workflows/ci.yml` (55110e4)
-    - [ ] Define triggers for `push` (all branches) and `pull_request` (to `main`).
-    - [ ] Add jobs to build frontend and backend test images.
-    - [ ] Add jobs to run `npm test` for frontend and backend.
-- [ ] Task: Verify CI workflow with a feature branch
-    - [ ] Create a temporary branch and push a change.
-    - [ ] Confirm tests run and report status to GitHub.
+    - [x] Define triggers for `push` (all branches) and `pull_request` (to `main`).
+    - [x] Add jobs to build frontend and backend test images.
+    - [x] Add jobs to run `npm test` for frontend and backend.
+- [x] Task: Verify CI workflow with a feature branch (9d0050a)
+    - [x] Create a temporary branch and push a change.
+    - [x] Confirm tests run and report status to GitHub.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Continuous Integration (CI) Pipeline' (Protocol in workflow.md)
 
 ## Phase 2: Continuous Deployment (CD) Pipeline
