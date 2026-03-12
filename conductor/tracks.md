@@ -13,3 +13,8 @@ This file tracks all major tracks for the project. Each track has its own detail
   *Link: [./tracks/docker_stack_20260308/](./tracks/docker_stack_20260308/)*
 
 ---
+
+- [ ] **Track: Multi-Developer DevOps Pipeline**
+  *Link: [./tracks/multi_dev_devops_20260312/](./tracks/multi_dev_devops_20260312/)*
+
+---
